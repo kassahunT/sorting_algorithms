@@ -1,79 +1,88 @@
 #include "sort.h"
 
 /**
- * sift_down - fixes a heap
- * @array: the heap to fix
- * @root: the root of the heap
- * @end: the last index of the heap
- * @size: size of the array
- *
- * Return: void
- */
-void sift_down(int *array, size_t root, size_t end, size_t size)
-{
-	size_t left_child, right_child, swap;
-	int temp;
-
-	while ((left_child = (2 * root) + 1) <= end)
-	{
-		swap = root;
-		right_child = left_child + 1;
-		if (array[swap] < array[left_child])
-			swap = left_child;
-		if (right_child <= end && array[swap] < array[right_child])
-			swap = right_child;
-		if (swap == root)
-			return;
-		temp = array[root];
-		array[root] = array[swap];
-		array[swap] = temp;
-		print_array(array, size);
-		root = swap;
-	}
-}
-
-/**
- * make_heap - makes a heap from an unsorted array
- * @array: array to turn into a heap
- * @size: size of the array
- *
- * Return: void
- */
-void make_heap(int *array, size_t size)
-{
-	size_t parent;
-
-	for (parent = ((size - 1) - 1) / 2; 1; parent--)
-	{
-		sift_down(array, parent, size - 1, size);
-		if (parent == 0)
-			break;
-	}
-}
-
-/**
- * heap_sort - sorts an array of ints in ascending order w/ the Heap sort algo
- * @array: array to sort
- * @size: size of the array
- *
- * Return: void
+ * heap_sort - sorts array of integers in ascending order
+ * using Heap Sort algorithm
+ * @array: list of integers
+ * @size: size of array
  */
 void heap_sort(int *array, size_t size)
 {
-	size_t end;
+	int high;
+
+	heapify(array, size);
+	high = size - 1;
+
+	while (high > 0)
+	{
+		swap(array, array[high], array[0]);
+		print_array(array, size);
+		high = size - 1;
+		printf("BEFORE INITIAL SIFT_DOWN\n");
+		sift_down(array, 0, high, size);
+	}
+}
+
+/**
+ * heapify - turns array into heap
+ * @array: list of integers
+ * @size: size of array
+ */
+void heapify(int *array, size_t size)
+{
+	int low;
+
+	low = (size - 2) / 2;
+
+	while (low >= 0)
+	{
+		printf("BEFORE HEAPIFY SIFT_DOWN\n");
+		sift_down(array, low, size - 1, size);
+		low = low - 1;
+	}
+}
+
+/**
+ * sift_down - sorts heap so parent values are larger than child values
+ * @array: list of integers
+ * @low: start of array
+ * @high: end of array
+ */
+void sift_down(int *array, int low, int high, size_t size)
+{
+	int root;
+	int child;
+
+	root = low;
+
+	while (root * 2 + 1 <= high)
+	{
+		child = root * 2 + 1;
+		if (child + 1 <= high && array[child] < array[child + 1])
+			child = child + 1;
+		if (array[root] < array[child])
+		{
+			printf("BEFORE SIFT_DOWN SWAP\n");
+			swap(array, array[root], array[child]);
+			print_array(array, size);
+			root = child;
+		}
+		else
+			return;
+	}
+}
+
+/**
+ * swap - swaps two values in array
+ * @array: list of integers
+ * @i: index position of first value
+ * @j; index position of second value
+ */
+void swap(int *array, int i, int j)
+{
 	int temp;
 
-	if (array == NULL || size < 2)
-		return;
-	make_heap(array, size);
-	end = size - 1;
-	while (end > 0)
-	{
-		temp = array[end];
-		array[end] = array[0];
-		array[0] = temp;
-		print_array(array, size);
-		end--;
-		sift_down(array, 0, end, size);
-	}
+	temp = array[i];
+	array[i] = array[j];
+	array[j] = temp;
 }
